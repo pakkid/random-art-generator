@@ -36,9 +36,10 @@ function generateArt() {
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 100'); // Set viewBox to ensure coordinates are relative
 
     const shapeAmount = document.getElementById('shape-amount').value;
-    const shapeSize = document.getElementById('shape-size').value;
+    const shapeSize = document.getElementById('shape-size').value / 2; // Reduce the maximum size of shapes
     const randomness = document.getElementById('randomness').value;
 
     const shapes = [
@@ -49,65 +50,78 @@ function generateArt() {
         { type: 'squiggle', enabled: document.getElementById('squiggles').checked }
     ];
 
+    let squiggleCount = 0;
+    const minSquiggles = 3;
+    const maxSquiggles = 6;
+    const totalSquiggles = Math.floor(Math.random() * (maxSquiggles - minSquiggles + 1)) + minSquiggles;
+
     for (let i = 0; i < shapeAmount; i++) {
         const shape = shapes[Math.floor(Math.random() * shapes.length)];
         if (!shape.enabled) continue;
 
+        if (shape.type === 'squiggle' && squiggleCount >= totalSquiggles) {
+            continue; // Skip adding more squiggles if the limit is reached
+        }
+
         switch (shape.type) {
             case 'circle':
                 const circle = document.createElementNS(svgNS, 'circle');
-                circle.setAttribute('cx', Math.random() * 100 + '%');
-                circle.setAttribute('cy', Math.random() * 100 + '%');
+                circle.setAttribute('cx', Math.random() * 100);
+                circle.setAttribute('cy', Math.random() * 100);
                 circle.setAttribute('r', Math.random() * shapeSize);
                 circle.setAttribute('fill', getRandomColor());
                 svg.appendChild(circle);
                 break;
             case 'rect':
                 const rect = document.createElementNS(svgNS, 'rect');
-                rect.setAttribute('x', Math.random() * 100 + '%');
-                rect.setAttribute('y', Math.random() * 100 + '%');
+                rect.setAttribute('x', Math.random() * 100);
+                rect.setAttribute('y', Math.random() * 100);
                 rect.setAttribute('width', Math.random() * shapeSize);
                 rect.setAttribute('height', Math.random() * shapeSize);
                 rect.setAttribute('fill', getRandomColor());
-                rect.setAttribute('transform', `rotate(${Math.random() * 360}, ${Math.random() * 100}%, ${Math.random() * 100}%)`);
+                rect.setAttribute('transform', `rotate(${Math.random() * 360}, ${Math.random() * 100}, ${Math.random() * 100})`);
                 svg.appendChild(rect);
                 break;
             case 'ellipse':
                 const ellipse = document.createElementNS(svgNS, 'ellipse');
-                ellipse.setAttribute('cx', Math.random() * 100 + '%');
-                ellipse.setAttribute('cy', Math.random() * 100 + '%');
+                ellipse.setAttribute('cx', Math.random() * 100);
+                ellipse.setAttribute('cy', Math.random() * 100);
                 ellipse.setAttribute('rx', Math.random() * shapeSize);
                 ellipse.setAttribute('ry', Math.random() * (shapeSize / 2));
                 ellipse.setAttribute('fill', getRandomColor());
-                ellipse.setAttribute('transform', `rotate(${Math.random() * 360}, ${Math.random() * 100}%, ${Math.random() * 100}%)`);
+                ellipse.setAttribute('transform', `rotate(${Math.random() * 360}, ${Math.random() * 100}, ${Math.random() * 100})`);
                 svg.appendChild(ellipse);
                 break;
             case 'line':
                 const line = document.createElementNS(svgNS, 'line');
-                line.setAttribute('x1', Math.random() * 100 + '%');
-                line.setAttribute('y1', Math.random() * 100 + '%');
-                line.setAttribute('x2', Math.random() * 100 + '%');
-                line.setAttribute('y2', Math.random() * 100 + '%');
+                line.setAttribute('x1', Math.random() * 100);
+                line.setAttribute('y1', Math.random() * 100);
+                line.setAttribute('x2', Math.random() * 100);
+                line.setAttribute('y2', Math.random() * 100);
                 line.setAttribute('stroke', getRandomColor());
                 line.setAttribute('stroke-width', Math.random() * (shapeSize / 10));
                 svg.appendChild(line);
                 break;
             case 'squiggle':
                 const path = document.createElementNS(svgNS, 'path');
-                const startX = Math.random() * 100;
-                const startY = Math.random() * 100;
-                const controlX1 = startX + Math.random() * randomness - randomness / 2;
-                const controlY1 = startY + Math.random() * randomness - randomness / 2;
-                const controlX2 = startX + Math.random() * randomness - randomness / 2;
-                const controlY2 = startY + Math.random() * randomness - randomness / 2;
-                const endX = startX + Math.random() * randomness - randomness / 2;
-                const endY = startY + Math.random() * randomness - randomness / 2;
-                const d = `M${startX}% ${startY}% C${controlX1}% ${controlY1}%, ${controlX2}% ${controlY2}%, ${endX}% ${endY}%`;
+                let d = `M${Math.random() * 100} ${Math.random() * 100}`;
+                const numControlPoints = Math.floor(Math.random() * 3) + 3; // Random number of control points between 3 and 5
+                for (let j = 0; j < numControlPoints; j++) {
+                    const controlX1 = Math.random() * 100;
+                    const controlY1 = Math.random() * 100;
+                    const controlX2 = Math.random() * 100;
+                    const controlY2 = Math.random() * 100;
+                    const endX = Math.random() * 100;
+                    const endY = Math.random() * 100;
+                    d += ` C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+                }
                 path.setAttribute('d', d);
                 path.setAttribute('stroke', getRandomColor());
-                path.setAttribute('stroke-width', Math.random() * (shapeSize / 10));
+                path.setAttribute('stroke-width', Math.random() * (shapeSize / 20)); // Smaller stroke width
                 path.setAttribute('fill', 'none');
                 svg.appendChild(path);
+                squiggleCount++;
+                console.log('Squiggle path:', d); // Debugging statement
                 break;
         }
     }
