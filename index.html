@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Art Generator</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="art-container"></div>
+        <div id="controls">
+            <label for="shape-amount">Amount of Shapes:</label>
+            <input type="range" id="shape-amount" min="1" max="50" value="10">
+            <span id="shape-amount-value">10</span>
+
+            <label for="shape-size">Max Shape Size:</label>
+            <input type="range" id="shape-size" min="10" max="100" value="50">
+            <span id="shape-size-value">50</span>
+
+            <label for="randomness">Randomness:</label>
+            <input type="range" id="randomness" min="1" max="100" value="50">
+            <span id="randomness-value">50</span>
+
+            <div>
+                <label><input type="checkbox" id="circles" checked> Circles</label>
+                <label><input type="checkbox" id="rectangles" checked> Rectangles</label>
+                <label><input type="checkbox" id="ellipses" checked> Ellipses</label>
+                <label><input type="checkbox" id="lines" checked> Lines</label>
+                <label><input type="checkbox" id="squiggles" checked> Squiggles</label>
+            </div>
+
+            <button id="generate-art">Generate Art</button>
+        </div>
+    </div>
+    <script src="assets/script.js"></script>
+</body>
+</html>
