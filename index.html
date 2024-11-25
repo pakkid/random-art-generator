@@ -22,6 +22,10 @@
             <input type="range" id="randomness" min="1" max="100" value="50">
             <span id="randomness-value">50</span>
 
+            <label for="background-color">Canvas Background Color:</label>
+            <input type="color" id="background-color" value="#ffffff">
+            <label><input type="checkbox" id="transparent-background"> Transparent</label>
+
             <div>
                 <label><input type="checkbox" id="circles" checked> Circles</label>
                 <label><input type="checkbox" id="rectangles" checked> Rectangles</label>
@@ -31,6 +35,7 @@
             </div>
 
             <button id="generate-art">Generate Art</button>
+            <button id="save-art">Save Image to PNG</button> <!-- New button -->
         </div>
     </div>
     <script src="assets/script.js"></script>

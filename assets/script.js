@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
     const generateArtButton = document.getElementById('generate-art');
+    const saveArtButton = document.getElementById('save-art'); // New button
     const artContainer = document.getElementById('art-container');
     const shapeAmountInput = document.getElementById('shape-amount');
     const shapeSizeInput = document.getElementById('shape-size');
@@ -8,6 +9,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const shapeAmountValue = document.getElementById('shape-amount-value');
     const shapeSizeValue = document.getElementById('shape-size-value');
     const randomnessValue = document.getElementById('randomness-value');
+    const backgroundColorInput = document.getElementById('background-color');
+    const transparentBackgroundCheckbox = document.getElementById('transparent-background');
 
     shapeAmountInput.addEventListener('input', () => {
         shapeAmountValue.textContent = shapeAmountInput.value;
@@ -26,6 +29,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     } else {
         console.error('Button or container not found');
     }
+
+    if (saveArtButton && artContainer) {
+        saveArtButton.addEventListener('click', saveArtAsPNG); // Attach event listener
+    } else {
+        console.error('Save button or container not found');
+    }
 });
 
 function generateArt() {
@@ -41,6 +50,16 @@ function generateArt() {
     const shapeAmount = document.getElementById('shape-amount').value;
     const shapeSize = document.getElementById('shape-size').value / 2; // Reduce the maximum size of shapes
     const randomness = document.getElementById('randomness').value;
+    const backgroundColor = document.getElementById('background-color').value;
+    const transparentBackground = document.getElementById('transparent-background').checked;
+
+    if (!transparentBackground) {
+        const rect = document.createElementNS(svgNS, 'rect');
+        rect.setAttribute('width', '100%');
+        rect.setAttribute('height', '100%');
+        rect.setAttribute('fill', backgroundColor);
+        svg.appendChild(rect);
+    }
 
     const shapes = [
         { type: 'circle', enabled: document.getElementById('circles').checked },
@@ -136,4 +155,30 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+function saveArtAsPNG() {
+    const svg = document.querySelector('#art-container svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    const scaleFactor = 4; // Increase the scale factor for higher quality
+    canvas.width = svg.clientWidth * scaleFactor;
+    canvas.height = svg.clientHeight * scaleFactor;
+
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const pngFile = canvas.toDataURL('image/png');
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngFile;
+        downloadLink.download = 'art.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
 }
